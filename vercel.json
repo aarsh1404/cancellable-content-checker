@@ -18,10 +18,5 @@
     "STREAMLIT_SERVER_HEADLESS": "true",
     "STREAMLIT_BROWSER_GATHER_USAGE_STATS": "false",
     "VERCEL": "1"
-  },
-  "functions": {
-    "app.py": {
-      "maxDuration": 30
-    }
   }
 }
