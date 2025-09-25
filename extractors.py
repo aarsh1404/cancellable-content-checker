@@ -44,11 +44,19 @@ class ContentExtractor:
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
         
-        # Initialize visual analyzer
+        # Initialize visual analyzer (check for Vercel environment)
         try:
-            from visual_analyzer import VisualURLAnalyzer
-            self.visual_analyzer = VisualURLAnalyzer()
-            self.visual_available = True
+            # Check if we're in Vercel environment (no browser automation)
+            if os.getenv('VERCEL') or os.getenv('VERCEL_ENV'):
+                from visual_analyzer_vercel import VisualURLAnalyzerVercel
+                self.visual_analyzer = VisualURLAnalyzerVercel()
+                self.visual_available = True
+                st.info("🌐 Using lightweight URL analysis (Vercel-compatible)")
+            else:
+                # Use full-featured analyzer for local development
+                from visual_analyzer import VisualURLAnalyzer
+                self.visual_analyzer = VisualURLAnalyzer()
+                self.visual_available = True
         except ImportError:
             self.visual_analyzer = None
             self.visual_available = False

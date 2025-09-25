@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import time
+import os
 from datetime import datetime
 from analyzer import ContentAnalyzer
 from extractors import ContentExtractor
@@ -271,15 +272,30 @@ def main():
     
     with tab3:
         st.markdown("### URL Analysis")
-        st.markdown("""
-        <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-            <h4 style="margin: 0; color: #1f77b4;">🌐 Enhanced URL Analysis</h4>
-            <p style="margin: 10px 0 0 0; color: #666;">
-                <strong>Supported Sites:</strong> Regular websites, X.com/Twitter, Instagram, TikTok, LinkedIn, and more<br>
-                <strong>Features:</strong> JavaScript execution, visual content extraction, screenshot capture, metadata analysis
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        # Check if we're in Vercel environment
+        is_vercel = os.getenv('VERCEL') or os.getenv('VERCEL_ENV')
+        
+        if is_vercel:
+            st.markdown("""
+            <div style="background-color: #fff3cd; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                <h4 style="margin: 0; color: #856404;">🌐 URL Analysis (Vercel Edition)</h4>
+                <p style="margin: 10px 0 0 0; color: #856404;">
+                    <strong>Supported Sites:</strong> Regular websites with basic HTML content<br>
+                    <strong>Features:</strong> Text extraction, image analysis, metadata extraction<br>
+                    <strong>Note:</strong> JavaScript-heavy sites (X.com, Instagram) may have limited content extraction
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div style="background-color: #f0f2f6; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <h4 style="margin: 0; color: #1f77b4;">🌐 Enhanced URL Analysis</h4>
+                <p style="margin: 10px 0 0 0; color: #666;">
+                    <strong>Supported Sites:</strong> Regular websites, X.com/Twitter, Instagram, TikTok, LinkedIn, and more<br>
+                    <strong>Features:</strong> JavaScript execution, visual content extraction, screenshot capture, metadata analysis
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
         
         url_input = st.text_input(
             "Enter URL to analyze:",
