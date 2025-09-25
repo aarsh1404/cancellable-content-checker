@@ -1,11 +1,11 @@
 """
 Content extraction utilities for various file formats and URLs
-Enhanced with visual content analysis capabilities
 """
 
 import io
+import os
 import requests
-from typing import Optional, Union, Dict
+from typing import Optional, Union
 from urllib.parse import urlparse
 import streamlit as st
 
@@ -43,23 +43,6 @@ class ContentExtractor:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
-        
-        # Initialize visual analyzer (check for Vercel environment)
-        try:
-            # Check if we're in Vercel environment (no browser automation)
-            if os.getenv('VERCEL') or os.getenv('VERCEL_ENV'):
-                from visual_analyzer_vercel import VisualURLAnalyzerVercel
-                self.visual_analyzer = VisualURLAnalyzerVercel()
-                self.visual_available = True
-                st.info("🌐 Using lightweight URL analysis (Vercel-compatible)")
-            else:
-                # Use full-featured analyzer for local development
-                from visual_analyzer import VisualURLAnalyzer
-                self.visual_analyzer = VisualURLAnalyzer()
-                self.visual_available = True
-        except ImportError:
-            self.visual_analyzer = None
-            self.visual_available = False
     
     def extract_from_file(self, uploaded_file) -> str:
         """
@@ -237,41 +220,6 @@ class ContentExtractor:
             raise Exception(f"Failed to fetch URL: {str(e)}")
         except Exception as e:
             raise Exception(f"Failed to extract content from URL: {str(e)}")
-    
-    def extract_from_url_enhanced(self, url: str) -> Dict:
-        """
-        Enhanced URL extraction with visual content analysis
-        
-        Args:
-            url: URL to analyze
-            
-        Returns:
-            Dictionary with text content, visual elements, and metadata
-        """
-        if not self.visual_available or not self.visual_analyzer:
-            # Fallback to basic extraction
-            try:
-                text_content = self.extract_from_url(url)
-                return {
-                    'text_content': text_content,
-                    'visual_elements': [],
-                    'screenshot': None,
-                    'metadata': {},
-                    'images': [],
-                    'error': None
-                }
-            except Exception as e:
-                return {
-                    'text_content': '',
-                    'visual_elements': [],
-                    'screenshot': None,
-                    'metadata': {},
-                    'images': [],
-                    'error': str(e)
-                }
-        
-        # Use enhanced visual analyzer
-        return self.visual_analyzer.analyze_url_enhanced(url)
     
     def _extract_from_html(self, html_content: str, url: str) -> str:
         """Extract text content from HTML"""
